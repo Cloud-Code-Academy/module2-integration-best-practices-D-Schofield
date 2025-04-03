@@ -16,7 +16,7 @@ private class ExchangeRateServiceTest {
         
         // Call the method to test
         Test.startTest();
-        ExchangeRateWrapper wrapper = ExchangeRateService.getLatestRates();
+        ExchangeRateWrapper wrapper = new ExchangeRateService().getLatestRates();
         Test.stopTest();
         
         // Verify the result
@@ -37,7 +37,7 @@ private class ExchangeRateServiceTest {
         // Call the method to test and expect an exception
         Test.startTest();
         try {
-            ExchangeRateWrapper wrapper = ExchangeRateService.getLatestRates();
+            ExchangeRateWrapper wrapper = new ExchangeRateService().getLatestRates();
             Assert.fail('Should have thrown an exception');
         } catch (Exception e) {
             Assert.isTrue(e.getMessage().contains('Error'), 'Exception message should mention error');
@@ -53,6 +53,7 @@ private class ExchangeRateServiceTest {
         // Create a wrapper manually
         ExchangeRateWrapper wrapper = new ExchangeRateWrapper();
         wrapper.base_code = 'USD';
+        // would it be easier/better to work with the utc time? 
         wrapper.time_last_update_unix = '1740690001';
         
         // Add rates
@@ -64,7 +65,7 @@ private class ExchangeRateServiceTest {
         
         // Process the rates
         Test.startTest();
-        List<Exchange_Rate__c> rates = ExchangeRateService.processRates(wrapper);
+        List<Exchange_Rate__c> rates = new ExchangeRateService().processRates(wrapper);
         Test.stopTest();
         
         // Verify the results
@@ -95,7 +96,7 @@ private class ExchangeRateServiceTest {
         
         // Call the method to test
         Test.startTest();
-        List<Exchange_Rate__c> rates = ExchangeRateService.updateExchangeRates();
+        List<Exchange_Rate__c> rates = new ExchangeRateService().updateExchangeRates();
         Test.stopTest();
         
         // Verify the results
