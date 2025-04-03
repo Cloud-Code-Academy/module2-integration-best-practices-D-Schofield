@@ -8,10 +8,10 @@ global class ExchangeRateScheduler implements Schedulable {
      * @description Executes the scheduled job to update exchange rates
      * @param context The SchedulableContext
      */
-    global void execute(SchedulableContext SC) {
+    global void execute(SchedulableContext sc) {
         // 1. Call ExchangeRateService.updateExchangeRates()
         try {
-            List<Exchange_Rate__c> updatedRateRecords = ExchangeRateService.updateExchangeRates();
+            ExchangeRateService.updateExchangeRates();
         } catch (Exception e) {
             System.debug('Error with Exchange Rate job: ' + e.getMessage());
         }

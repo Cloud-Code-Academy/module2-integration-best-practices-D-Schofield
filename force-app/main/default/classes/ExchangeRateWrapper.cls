@@ -7,9 +7,9 @@ public class ExchangeRateWrapper {
     // TODO: Implement properties to match the JSON structure of the API response
     // Sample response:
     // {
-    //   "base_code": "USD",
-    //   "time_last_update_unix": 1740690001,
-    //   "conversion_rates": {
+    //   "baseCode": "USD",
+    //   "lastUpdateUnix": 1740690001,
+    //   "conversionRates": {
     //     "EUR": 0.9488,
     //     "GBP": 0.8393,
     //     "JPY": 136.57,
@@ -17,41 +17,41 @@ public class ExchangeRateWrapper {
     //   }
     // }
 
-    //public ExchangeRateWrapper(String baseCurrencyCode, String lastUpdateUnix, String lastUpdateUTC, Map<String, Decimal> conversionRates, String targetCurrencyCode) {
-    //public ExchangeRateWrapper(String baseCurrencyCode, String lastUpdateUTC, Map<String, Decimal> conversionRates, String targetCurrencyCode) {
-    /*public ExchangeRateWrapper(String baseCurrencyCode, String lastUpdateUTC, Map<String, Decimal> conversionRates) {
-        this.base_code = baseCurrencyCode;
-        //this.time_last_update_unix = lastUpdateUnix;
-        this.time_last_update_utc = DateTime.valueOfGMT(lastUpdateUTC);
-        this.conversion_rates = conversionRates;
-        //this.externalId = baseCurrencyCode + '_' + targetCurrencyCode;
-    }*/
+    public String baseCode;
+    public String lastUpdateUnix;
+    //public DateTime time_last_update_utc;
+    public Map<String, Decimal> conversionRates;
 
-    public ExchangeRateWrapper(String baseCurrencyCode, String lastUpdateUnix, Map<String, Decimal> conversionRates) {
-        this.base_code = baseCurrencyCode;
-        this.time_last_update_unix = lastUpdateUnix;
-        this.conversion_rates = conversionRates;
-    }
-
-    // used in ExchangeRateService for toExchangeRates() method
-    public ExchangeRateWrapper(ExchangeRateWrapper wrp) {
-        this.base_code = wrp.base_code;
-        this.time_last_update_utc = wrp.time_last_update_utc;
-        this.conversion_rates = wrp.conversion_rates;
-    }
-
-    public ExchangeRateWrapper() {}
-
-    // Add properties for base currency
-    public String base_code;
-    public String time_last_update_unix;
-    public DateTime time_last_update_utc;
-    public Map<String, Decimal> conversion_rates;
-    
     // Add property for external ID
     // This is an ID you will generate to uniquely identify the exchange rate record
     // This does not come from the API response
     //public String externalId; // baseCurrency + '_' + targetCurrency
+    //public ExchangeRateWrapper(String baseCurrencyCode, String lastUpdateUnix, String lastUpdateUTC, Map<String, Decimal> conversionRates, String targetCurrencyCode) {
+    //public ExchangeRateWrapper(String baseCurrencyCode, String lastUpdateUTC, Map<String, Decimal> conversionRates, String targetCurrencyCode) {
+    /*public ExchangeRateWrapper(String baseCurrencyCode, String lastUpdateUTC, Map<String, Decimal> conversionRates) {
+        this.baseCode = baseCurrencyCode;
+        //this.lastUpdateUnix = lastUpdateUnix;
+        this.time_last_update_utc = DateTime.valueOfGMT(lastUpdateUTC);
+        this.conversionRates = conversionRates;
+        //this.externalId = baseCurrencyCode + '_' + targetCurrencyCode;
+    }*/
+
+    public ExchangeRateWrapper(String baseCurrencyCode, String lastUpdateUnix, Map<String, Decimal> conversionRates) {
+        this.baseCode = baseCurrencyCode;
+        this.lastUpdateUnix = lastUpdateUnix;
+        this.conversionRates = conversionRates;
+    }
+
+    // used in ExchangeRateService for toExchangeRates() method
+    public ExchangeRateWrapper(ExchangeRateWrapper wrp) {
+        this.baseCode = wrp.baseCode;
+        this.lastUpdateUnix = wrp.lastUpdateUnix;
+        this.conversionRates = wrp.conversionRates;
+    }
+
+    // used in ExchangeRateServiceTest
+    public ExchangeRateWrapper() {
+    }
 
     /**
      * @description Converts the wrapper data to a list of Exchange_Rate__c records
@@ -64,13 +64,13 @@ public class ExchangeRateWrapper {
         // 3. For each rate, create an Exchange_Rate__c record
         // 4. Return the list of records
         List<Exchange_Rate__c> rates = new List<Exchange_Rate__c>(); 
-        for (String currencyCode : rateData.conversion_rates.keySet()) {
-            Long unixTime = Long.valueOf(rateData.time_last_update_unix);
+        for (String currencyCode : rateData.conversionRates.keySet()) {
+            Long unixTime = Long.valueOf(rateData.lastUpdateUnix);
             //TODO make sure map contains key
-            Decimal decimalRate = (Decimal)rateData.conversion_rates.get(currencyCode);
+            Decimal decimalRate = (Decimal)rateData.conversionRates.get(currencyCode);
             Exchange_Rate__c rateRecord = new Exchange_Rate__c(
-                Base_Currency__c    = rateData.base_code,
-                External_Id__c      = rateData.base_code + '_' + currencyCode,
+                Base_Currency__c    = rateData.baseCode,
+                External_Id__c      = rateData.baseCode + '_' + currencyCode,
                 Last_Updated__c     = convertUnixToDateTime(unixTime), //1743552002
                 //Last_Updated__c     = rateData.time_last_update_utc,
                 Rate__c             = decimalRate, //1074.5400
