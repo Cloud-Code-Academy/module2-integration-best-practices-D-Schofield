@@ -53,7 +53,7 @@ public class ExchangeRateService implements Callable {
         if(this.apiConfig == null) {
             fetchMetadataConfig();
         }
-        String endpoint = 'callout:' + NAMED_CREDENTIAL + this.apiConfig.API_Key__c + 'latest' + this.apiConfig.Base_Currency__c;
+        String endpoint = 'callout:' + NAMED_CREDENTIAL + '/' + this.apiConfig.API_Key__c + '/latest/' + this.apiConfig.Base_Currency__c;
         HttpRequest req = new HttpRequest(); 
         req.setEndpoint(endpoint); 
         req.setMethod('GET');
