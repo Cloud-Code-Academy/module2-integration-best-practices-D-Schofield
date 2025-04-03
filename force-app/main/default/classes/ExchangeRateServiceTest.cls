@@ -21,9 +21,9 @@ private class ExchangeRateServiceTest {
         
         // Verify the result
         Assert.areNotEqual(null, wrapper, 'Wrapper should not be null');
-        Assert.areEqual('USD', wrapper.baseCode, 'Base currency should be USD');
-        Assert.areEqual(9, wrapper.conversionRates.size(), 'Should have 9 rates');
-        Assert.areEqual(0.9488, wrapper.conversionRates.get('EUR'), 'EUR rate should match');
+        Assert.areEqual('USD', wrapper.base_code, 'Base currency should be USD');
+        Assert.areEqual(9, wrapper.conversion_rates.size(), 'Should have 9 rates');
+        Assert.areEqual(0.9488, wrapper.conversion_rates.get('EUR'), 'EUR rate should match');
     }
     
     /**
@@ -52,12 +52,12 @@ private class ExchangeRateServiceTest {
     static void testProcessRates() {
         // Create a wrapper manually
         ExchangeRateWrapper wrapper = new ExchangeRateWrapper();
-        wrapper.baseCode = 'USD';
+        wrapper.base_code = 'USD';
         // would it be easier/better to work with the utc time? 
-        wrapper.lastUpdateUnix = '1740690001';
+        wrapper.time_last_update_unix = '1740690001';
         
         // Add rates
-        wrapper.conversionRates = new Map<String, Decimal>{
+        wrapper.conversion_rates = new Map<String, Decimal>{
             'EUR' => 0.9488,
             'GBP' => 0.8393,
             'JPY' => 136.57

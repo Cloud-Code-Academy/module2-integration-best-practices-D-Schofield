@@ -51,9 +51,9 @@ public class ExchangeRateMock implements HttpCalloutMock {
      */
     private String getSuccessfulResponse() {
         return '{' +
-               '"baseCode": "USD",' +
-               '"lastUpdateUnix": 1740690001,' +
-               '"conversionRates": {' +
+               '"base_code": "USD",' +
+               '"time_last_update_unix": 1740690001,' +
+               '"conversion_rates": {' +
                '  "EUR": 0.9488,' +
                '  "GBP": 0.8393,' +
                '  "JPY": 136.57,' +
@@ -73,9 +73,9 @@ public class ExchangeRateMock implements HttpCalloutMock {
      */
     public static String getEmptyRatesResponse() {
         return '{' +
-               '"baseCode": "USD",' +
-               '"lastUpdateUnix": 1740690001,' +
-               '"conversionRates": {}' +
+               '"base_code": "USD",' +
+               '"time_last_update_unix": 1740690001,' +
+               '"conversion_rates": {}' +
                '}';
     }
     

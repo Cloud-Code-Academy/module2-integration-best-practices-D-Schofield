@@ -7,9 +7,9 @@ public class ExchangeRateWrapper {
     // TODO: Implement properties to match the JSON structure of the API response
     // Sample response:
     // {
-    //   "baseCode": "USD",
-    //   "lastUpdateUnix": 1740690001,
-    //   "conversionRates": {
+    //   "base_code": "USD",
+    //   "time_last_update_unix": 1740690001,
+    //   "conversion_rates": {
     //     "EUR": 0.9488,
     //     "GBP": 0.8393,
     //     "JPY": 136.57,
@@ -17,21 +17,25 @@ public class ExchangeRateWrapper {
     //   }
     // }
 
-    public String baseCode;
-    public String lastUpdateUnix; // would UTC String be easier/better to work with? - DateTime.valueOfGMT(lastUpdateUTC);
-    public Map<String, Decimal> conversionRates;
+    /*public String base_code; // base_code
+    public String time_last_update_unix; // would UTC String be easier/better to work with? - DateTime.valueOfGMT(lastUpdateUTC); // time_last_update_unix
+    public Map<String, Decimal> conversion_rates; //conversion_rates */
 
-    public ExchangeRateWrapper(String baseCurrencyCode, String lastUpdateUnix, Map<String, Decimal> conversionRates) {
-        this.baseCode = baseCurrencyCode;
-        this.lastUpdateUnix = lastUpdateUnix;
-        this.conversionRates = conversionRates;
+    public String base_code; // base_code
+    public String time_last_update_unix; // would UTC String be easier/better to work with? - DateTime.valueOfGMT(lastUpdateUTC); // time_last_update_unix
+    public Map<String, Decimal> conversion_rates; //conversion_rates
+
+    public ExchangeRateWrapper(String baseCurrencyCode, String time_last_update_unix, Map<String, Decimal> conversion_rates) {
+        this.base_code = baseCurrencyCode;
+        this.time_last_update_unix = time_last_update_unix;
+        this.conversion_rates = conversion_rates;
     }
 
     // used in ExchangeRateService for toExchangeRates() method
     public ExchangeRateWrapper(ExchangeRateWrapper wrp) {
-        this.baseCode = wrp.baseCode;
-        this.lastUpdateUnix = wrp.lastUpdateUnix;
-        this.conversionRates = wrp.conversionRates;
+        this.base_code = wrp.base_code;
+        this.time_last_update_unix = wrp.time_last_update_unix;
+        this.conversion_rates = wrp.conversion_rates;
     }
 
     // used in ExchangeRateServiceTest
@@ -49,12 +53,12 @@ public class ExchangeRateWrapper {
         // 3. For each rate, create an Exchange_Rate__c record
         // 4. Return the list of records
         List<Exchange_Rate__c> rates = new List<Exchange_Rate__c>(); 
-        for (String currencyCode : rateData.conversionRates.keySet()) {
-            Long unixTime = Long.valueOf(rateData.lastUpdateUnix);
-            Decimal decimalRate = (Decimal)rateData.conversionRates.get(currencyCode);
+        for (String currencyCode : rateData.conversion_rates.keySet()) {
+            Long unixTime = Long.valueOf(rateData.time_last_update_unix);
+            Decimal decimalRate = (Decimal)rateData.conversion_rates.get(currencyCode);
             Exchange_Rate__c rateRecord = new Exchange_Rate__c(
-                Base_Currency__c    = rateData.baseCode,
-                External_Id__c      = buildExternalId(rateData.baseCode, currencyCode),
+                Base_Currency__c    = rateData.base_code,
+                External_Id__c      = buildExternalId(rateData.base_code, currencyCode),
                 Last_Updated__c     = convertUnixToDateTime(unixTime), //1743552002
                 Rate__c             = decimalRate, //1074.5400
                 Target_Currency__c  = currencyCode
@@ -89,11 +93,11 @@ public class ExchangeRateWrapper {
     /**
      * @description simple method for logic that creates external id
      * if it needs to be updated in the future, or accessed in different places, this is the one place that could be updated
-     * @param baseCode base currency code like USD
+     * @param base_code base currency code like USD
      * @param targetCode target currency code for exchange rate for base currency
      * @return String concatenated value that serves as external id
      */
-    private static String buildExternalId(String baseCode, String targetCode) {
-        return baseCode + '_' + targetCode;
+    private static String buildExternalId(String base_code, String targetCode) {
+        return base_code + '_' + targetCode;
     }
 }
