@@ -26,7 +26,7 @@ global class ExchangeRateScheduler implements Schedulable {
                 'config' => config
             };
             classInstance = (Callable) Type.forName(config.Apex_Class_Name__c).newInstance();
-            Object obj = classInstance.call(config.Apex_Method__c, params);
+            classInstance.call(config.Apex_Method__c, params);
             //ExchangeRateService.updateExchangeRates();
         } catch (Exception e) {
             System.debug('Error with Exchange Rate job: ' + e.getMessage());
