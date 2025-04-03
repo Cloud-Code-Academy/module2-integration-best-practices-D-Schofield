@@ -1,6 +1,9 @@
 /**
  * @description Wrapper class to deserialize the JSON response from the Exchange Rate API
  * Students will implement the properties and methods to process the data
+ * @pmd suppress FormalParameterNamingConventions
+ * @justification field names match the response from API, but don't confirm to PMD naming convention
+ * leaving it to match API for simplicity
  */
 public class ExchangeRateWrapper {
    
@@ -17,13 +20,9 @@ public class ExchangeRateWrapper {
     //   }
     // }
 
-    /*public String base_code; // base_code
-    public String time_last_update_unix; // would UTC String be easier/better to work with? - DateTime.valueOfGMT(lastUpdateUTC); // time_last_update_unix
-    public Map<String, Decimal> conversion_rates; //conversion_rates */
-
-    public String base_code; // base_code
-    public String time_last_update_unix; // would UTC String be easier/better to work with? - DateTime.valueOfGMT(lastUpdateUTC); // time_last_update_unix
-    public Map<String, Decimal> conversion_rates; //conversion_rates
+    public String base_code; 
+    public String time_last_update_unix; // would UTC String be easier/better to work with? - DateTime.valueOfGMT(lastUpdateUTC); 
+    public Map<String, Decimal> conversion_rates; 
 
     public ExchangeRateWrapper(String baseCurrencyCode, String time_last_update_unix, Map<String, Decimal> conversion_rates) {
         this.base_code = baseCurrencyCode;
