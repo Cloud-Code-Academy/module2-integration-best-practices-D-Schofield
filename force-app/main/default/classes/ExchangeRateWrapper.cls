@@ -26,6 +26,8 @@ public class ExchangeRateWrapper {
     // This is an ID you will generate to uniquely identify the exchange rate record
     // This does not come from the API response
     //public String externalId; // baseCurrency + '_' + targetCurrency
+    
+    
     //public ExchangeRateWrapper(String baseCurrencyCode, String lastUpdateUnix, String lastUpdateUTC, Map<String, Decimal> conversionRates, String targetCurrencyCode) {
     //public ExchangeRateWrapper(String baseCurrencyCode, String lastUpdateUTC, Map<String, Decimal> conversionRates, String targetCurrencyCode) {
     /*public ExchangeRateWrapper(String baseCurrencyCode, String lastUpdateUTC, Map<String, Decimal> conversionRates) {
