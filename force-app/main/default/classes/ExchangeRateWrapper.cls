@@ -18,25 +18,8 @@ public class ExchangeRateWrapper {
     // }
 
     public String baseCode;
-    public String lastUpdateUnix;
-    //public DateTime time_last_update_utc;
+    public String lastUpdateUnix; // would UTC String be easier/better to work with? - DateTime.valueOfGMT(lastUpdateUTC);
     public Map<String, Decimal> conversionRates;
-
-    // Add property for external ID
-    // This is an ID you will generate to uniquely identify the exchange rate record
-    // This does not come from the API response
-    //public String externalId; // baseCurrency + '_' + targetCurrency
-    
-    
-    //public ExchangeRateWrapper(String baseCurrencyCode, String lastUpdateUnix, String lastUpdateUTC, Map<String, Decimal> conversionRates, String targetCurrencyCode) {
-    //public ExchangeRateWrapper(String baseCurrencyCode, String lastUpdateUTC, Map<String, Decimal> conversionRates, String targetCurrencyCode) {
-    /*public ExchangeRateWrapper(String baseCurrencyCode, String lastUpdateUTC, Map<String, Decimal> conversionRates) {
-        this.baseCode = baseCurrencyCode;
-        //this.lastUpdateUnix = lastUpdateUnix;
-        this.time_last_update_utc = DateTime.valueOfGMT(lastUpdateUTC);
-        this.conversionRates = conversionRates;
-        //this.externalId = baseCurrencyCode + '_' + targetCurrencyCode;
-    }*/
 
     public ExchangeRateWrapper(String baseCurrencyCode, String lastUpdateUnix, Map<String, Decimal> conversionRates) {
         this.baseCode = baseCurrencyCode;
@@ -68,13 +51,11 @@ public class ExchangeRateWrapper {
         List<Exchange_Rate__c> rates = new List<Exchange_Rate__c>(); 
         for (String currencyCode : rateData.conversionRates.keySet()) {
             Long unixTime = Long.valueOf(rateData.lastUpdateUnix);
-            //TODO make sure map contains key
             Decimal decimalRate = (Decimal)rateData.conversionRates.get(currencyCode);
             Exchange_Rate__c rateRecord = new Exchange_Rate__c(
                 Base_Currency__c    = rateData.baseCode,
-                External_Id__c      = rateData.baseCode + '_' + currencyCode,
+                External_Id__c      = buildExternalId(rateData.baseCode, currencyCode),
                 Last_Updated__c     = convertUnixToDateTime(unixTime), //1743552002
-                //Last_Updated__c     = rateData.time_last_update_utc,
                 Rate__c             = decimalRate, //1074.5400
                 Target_Currency__c  = currencyCode
             ); 
@@ -95,9 +76,24 @@ public class ExchangeRateWrapper {
         return rateWrapper;
     }
     
+    /**
+     * @description Static method to convert a long unix time to a DateTime for the Salesforce record
+     * @param unixTime unix string from callout response, converted into a Long data type
+     * @return DateTime DateTime value to use for the Salesforce field value
+     */
     private static DateTime convertUnixToDateTime(Long unixTime) {
         Long unixTimeMilliseconds = unixTime * 1000; 
-        DateTime dt = DateTime.newInstance(unixTimeMilliseconds); 
-        return dt; 
+        return DateTime.newInstance(unixTimeMilliseconds); 
+    }
+
+    /**
+     * @description simple method for logic that creates external id
+     * if it needs to be updated in the future, or accessed in different places, this is the one place that could be updated
+     * @param baseCode base currency code like USD
+     * @param targetCode target currency code for exchange rate for base currency
+     * @return String concatenated value that serves as external id
+     */
+    private static String buildExternalId(String baseCode, String targetCode) {
+        return baseCode + '_' + targetCode;
     }
 }

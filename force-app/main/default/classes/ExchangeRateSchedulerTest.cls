@@ -11,6 +11,7 @@ private class ExchangeRateSchedulerTest {
     @isTest
     static void testExecute() {
         // Set up the Custom Metadata config
+        // Can set values for everything except an actual API Key
         Exchange_Rate_API_Config__mdt mockConfig = new Exchange_Rate_API_Config__mdt(
             Apex_Class_Name__c = 'ExchangeRateService',
             Apex_Method__c = 'updateExchangeRates',
@@ -28,8 +29,12 @@ private class ExchangeRateSchedulerTest {
         scheduler.execute(null); // Passing null as the context is sufficient for testing
         Test.stopTest();
         
-        Assert.isNotNull(scheduler.classInstance, 'Expected an instance of the Apex Class but did not observe the same.');
-        Assert.isInstanceOfType(scheduler.classInstance, ExchangeRateService.class, 'Expected the Callable to be an instance of ExchangeRateService class but it was not.');
+        /* original test performs callout and verifies 9 records were created
+         * But with API Key stored as Custom Metadata, cannot perform actual callout in the test without hardcoding they key somewhere
+         * So with Custom Metadata, and Callable, I modified this test to assert the ExchangeRateService class is called
+         * The tests for ExchangeRateService will have to handle the assertions for Exchange_Rate__c records
+         */
+
         /*
         // Verify that exchange rates were created
         List<Exchange_Rate__c> rates = [
@@ -38,6 +43,8 @@ private class ExchangeRateSchedulerTest {
         ];
         System.assertEquals(9, rates.size(), 'Should have 9 exchange rate records');
         */
+        Assert.isNotNull(scheduler.classInstance, 'Expected an instance of the Apex Class but did not observe the same.');
+        Assert.isInstanceOfType(scheduler.classInstance, ExchangeRateService.class, 'Expected the Callable to be an instance of ExchangeRateService class but it was not.');
     }
     
     /**

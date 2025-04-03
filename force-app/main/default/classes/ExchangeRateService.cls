@@ -4,26 +4,42 @@
  */ 
 public class ExchangeRateService implements Callable {
     
-    private static final String NAMED_CREDENTIAL = 'ExchangeRate_API';
+    private static final String NAMED_CREDENTIAL = 'ExchangeRate_API'; // could also be rolled into metadata config
 
-    private Exchange_Rate_API_Config__mdt apiConfig; // = [SELECT Id, API_Key__c, Base_Currency__c FROM Exchange_Rate_API_Config__mdt LIMIT 1];
+    // passed in from ExchangeRateScheduler through call method
+    private Exchange_Rate_API_Config__mdt apiConfig;
 
-    // The base currency to use for exchange rates
-    // TODO: Maybe convert this to a custom metadata config
-    //private static final String BASE_CURRENCY = 'USD';
-    //private final String baseCurrency = apiConfig.Base_Currency__c;
-    
-    public ExchangeRateService() {
+    private void fetchMetadataConfig() {
+        this.apiConfig = [SELECT Id, API_Key__c, Base_Currency__c, Apex_Class_Name__c, Apex_Method__c FROM Exchange_Rate_API_Config__mdt LIMIT 1];
     }
 
+    /**
+     * @description required call method to implement Callable interface
+     * using the callable interface from the scheduled job removes the hard dependancy on this class from the schedulable class
+     * that way when a job is scheduled, you can still modify this class/dependent classes without having to cancel scheduled jobs
+     * @param action required string parameter for call method; this is used for method name
+     * @param params required Map for call method; used to pass in Exchange_Rate_API_Config__mdt stored by 'config' key
+     * @return Object required Object return type for call method; for updateExchangeRates it is the List<Exchange_Rate__c> that were created
+     */
     public Object call(String action, Map<String, Object> params) {
+        // get metadata config from Map params
+        if(params.containsKey('config')) {
+            this.apiConfig = (Exchange_Rate_API_Config__mdt)params.get('config');
+        } else {
+            Logger.error('config key is not in params Map as expected: ' + JSON.serialize(params)).addTag('ExchangeRate');
+            Logger.saveLog();
+            fetchMetadataConfig();
+        }
+        // call the method passed in from action
         switch on action {
           when 'updateExchangeRates' {
-            this.apiConfig = (Exchange_Rate_API_Config__mdt)params.get('config');
             return updateExchangeRates();
           }
           when else {
-           throw new ExchangeRateServiceCustomException('Unknown action name: ' + action);
+            String errorMsg = 'Unknown action name: ' + action;
+            Logger.error(errorMsg).addTag('ExchangeRate');
+            Logger.saveLog();
+            throw new ExchangeRateServiceCustomException(errorMsg);
           }
         }
     }
@@ -33,6 +49,10 @@ public class ExchangeRateService implements Callable {
      * @return ExchangeRateWrapper containing the response data
      */
     public ExchangeRateWrapper getLatestRates() {
+        // passed in from ExchangeRateScheduler through call method, but if we want to access this method directly will need to fetch metadata for configs
+        if(this.apiConfig == null) {
+            fetchMetadataConfig();
+        }
         String endpoint = 'callout:' + NAMED_CREDENTIAL + this.apiConfig.API_Key__c + 'latest' + this.apiConfig.Base_Currency__c;
         HttpRequest req = new HttpRequest(); 
         req.setEndpoint(endpoint); 
@@ -43,9 +63,10 @@ public class ExchangeRateService implements Callable {
             ExchangeRateWrapper wrp = ExchangeRateWrapper.parse(res.getBody()); 
             return wrp; 
         } else {
-            throw new ExchangeRateServiceCustomException(
-                'Error with Exchange Rate callout. StatusCode: ' + res.getStatusCode() + ' | Body: ' + res.getBody()
-            ); 
+            String errorMsg = 'Error with Exchange Rate callout. StatusCode: ' + res.getStatusCode() + ' | Body: ' + res.getBody();
+            Logger.error(errorMsg).addTag('ExchangeRate');
+            Logger.saveLog();
+            throw new ExchangeRateServiceCustomException(errorMsg); 
         }
     }
     
@@ -55,10 +76,13 @@ public class ExchangeRateService implements Callable {
      * @return List<Exchange_Rate__c> The list of records created or updated
      */
     public List<Exchange_Rate__c> processRates(ExchangeRateWrapper rateData) {
-        // TODO: Implement the method to process rates and create/update records
         List<Exchange_Rate__c> rateRecords = ExchangeRateWrapper.toExchangeRates(rateData);
-        // try catch, create or update - upsert? 
-        insert rateRecords; 
+        try{
+            insert rateRecords; 
+        } catch(Exception e) {
+            Logger.error('Error inserting Exchange Rate records: ' + e.getMessage()).addTag('ExchangeRate');
+            Logger.saveLog();
+        } 
         return rateRecords;
     }
     
@@ -72,6 +96,9 @@ public class ExchangeRateService implements Callable {
         return latestRateRecords;
     }
 
+    /**
+     * custom exception for errors from ExchangeRateService class
+     */
     public class ExchangeRateServiceCustomException extends Exception {
     }
 }
