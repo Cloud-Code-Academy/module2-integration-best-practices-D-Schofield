@@ -7,6 +7,14 @@
         <value xsi:type="xsd:string">e9471f940c7786fcebf365b3</value>
     </values>
     <values>
+        <field>Apex_Class_Name__c</field>
+        <value xsi:type="xsd:string">ExchangeRateService</value>
+    </values>
+    <values>
+        <field>Apex_Method__c</field>
+        <value xsi:type="xsd:string">updateExchangeRates</value>
+    </values>
+    <values>
         <field>Base_Currency__c</field>
         <value xsi:type="xsd:string">USD</value>
     </values>
