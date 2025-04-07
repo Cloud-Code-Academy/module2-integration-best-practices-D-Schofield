@@ -33,6 +33,7 @@ public class ExchangeRateService implements Callable {
         // call the method passed in from action
         switch on action {
           when 'updateExchangeRates' {
+            // try catch added in updateExchangeRates method
             return updateExchangeRates();
           }
           when else {
@@ -91,9 +92,17 @@ public class ExchangeRateService implements Callable {
      * @return List<Exchange_Rate__c> The list of records created or updated
      */
     public List<Exchange_Rate__c> updateExchangeRates() {
-        ExchangeRateWrapper latestRatesData = getLatestRates();
-        List<Exchange_Rate__c> latestRateRecords = processRates(latestRatesData);
-        return latestRateRecords;
+        try {
+            ExchangeRateWrapper latestRatesData = getLatestRates();
+            List<Exchange_Rate__c> latestRateRecords = processRates(latestRatesData);
+            return latestRateRecords;
+        } catch(Exception e) {
+            String logMsg = 'Error in updateExchangeRates: ' + e.getMessage();
+            Logger.error(logMsg).addTag('ExchangeRate');
+            Logger.saveLog();
+            throw new ExchangeRateServiceCustomException(logMsg);
+        }
+        
     }
 
     /**
