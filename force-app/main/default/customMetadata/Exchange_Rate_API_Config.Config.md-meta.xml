@@ -4,7 +4,7 @@
     <protected>false</protected>
     <values>
         <field>API_Key__c</field>
-        <value xsi:type="xsd:string">e9471f940c7786fcebf365b3</value>
+        <value xsi:type="xsd:string">APIKey</value>
     </values>
     <values>
         <field>Apex_Class_Name__c</field>

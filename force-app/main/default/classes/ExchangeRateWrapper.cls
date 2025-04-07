@@ -30,12 +30,6 @@ public class ExchangeRateWrapper {
         this.conversion_rates = conversion_rates;
     }
 
-    // used in ExchangeRateService for toExchangeRates() method
-    public ExchangeRateWrapper(ExchangeRateWrapper wrp) {
-        this.base_code = wrp.base_code;
-        this.time_last_update_unix = wrp.time_last_update_unix;
-        this.conversion_rates = wrp.conversion_rates;
-    }
 
     // used in ExchangeRateServiceTest
     public ExchangeRateWrapper() {
