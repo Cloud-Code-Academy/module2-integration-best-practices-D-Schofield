@@ -5,6 +5,11 @@
       "default": true
     }
   ],
+  "dependencies": [
+    {
+      "package": "NebulaLogger"
+    }
+  ],
   "name": "integration-developer-2-best-practices",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
